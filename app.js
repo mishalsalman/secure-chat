@@ -1,21 +1,35 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  onSnapshot,
+  query,
+  orderBy
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-// FIREBASE CONFIG (I will generate for you later)
+// ================================
+// Your Firebase Config
+// ================================
 const firebaseConfig = {
-  apiKey: "PLACE-YOUR-KEY",
-  authDomain: "PLACE-YOUR-DOMAIN",
-  projectId: "PLACE-YOUR-PROJECT-ID",
-  storageBucket: "PLACE-YOUR-BUCKET",
-  messagingSenderId: "PLACE-YOUR-ID",
-  appId: "PLACE-YOUR-APP-ID"
+  apiKey: "AIzaSyDdObYiS_2YMjdm6FVbBTb8gkLhlxUTF80",
+  authDomain: "chat-c513e.firebaseapp.com",
+  projectId: "chat-c513e",
+  storageBucket: "chat-c513e.firebasestorage.app",
+  messagingSenderId: "582031038798",
+  appId: "1:582031038798:web:097347306588a31e44261f",
+  measurementId: "G-YZ60MMJQ0B"
 };
 
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-const chatRef = collection(db, "messages");
+// ================================
+// Chat System
+// ================================
 
+const chatRef = collection(db, "messages");
 const msgInput = document.getElementById("msgInput");
 const chatBox = document.getElementById("chatBox");
 
@@ -31,11 +45,16 @@ async function sendMessage() {
   msgInput.value = "";
 }
 
+window.sendMessage = sendMessage;
+
 onSnapshot(query(chatRef, orderBy("time")), (snapshot) => {
   chatBox.innerHTML = "";
+
   snapshot.forEach((doc) => {
     const p = document.createElement("p");
     p.innerText = doc.data().text;
     chatBox.appendChild(p);
   });
+
+  chatBox.scrollTop = chatBox.scrollHeight;
 });
