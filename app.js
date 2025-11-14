@@ -8,9 +8,6 @@ import {
   orderBy
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-// ================================
-// Your Firebase Config
-// ================================
 const firebaseConfig = {
   apiKey: "AIzaSyDdObYiS_2YMjdm6FVbBTb8gkLhlxUTF80",
   authDomain: "chat-c513e.firebaseapp.com",
@@ -21,40 +18,37 @@ const firebaseConfig = {
   measurementId: "G-YZ60MMJQ0B"
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// ================================
-// Chat System
-// ================================
+window.addEventListener("DOMContentLoaded", () => {
+  const chatRef = collection(db, "messages");
+  const msgInput = document.getElementById("msgInput");
+  const chatBox = document.getElementById("chatBox");
 
-const chatRef = collection(db, "messages");
-const msgInput = document.getElementById("msgInput");
-const chatBox = document.getElementById("chatBox");
+  async function sendMessage() {
+    const msg = msgInput.value.trim();
+    if (!msg) return;
 
-async function sendMessage() {
-  const msg = msgInput.value.trim();
-  if (!msg) return;
+    await addDoc(chatRef, {
+      text: msg,
+      time: Date.now()
+    });
+    msgInput.value = "";
+  }
 
-  await addDoc(chatRef, {
-    text: msg,
-    time: Date.now()
-  });
+  window.sendMessage = sendMessage;
 
-  msgInput.value = "";
-}
-
-window.sendMessage = sendMessage;
-
-onSnapshot(query(chatRef, orderBy("time")), (snapshot) => {
-  chatBox.innerHTML = "";
-
-  snapshot.forEach((doc) => {
-    const p = document.createElement("p");
-    p.innerText = doc.data().text;
-    chatBox.appendChild(p);
-  });
-
-  chatBox.scrollTop = chatBox.scrollHeight;
+  onSnapshot(
+    query(chatRef, orderBy("time")),
+    (snapshot) => {
+      chatBox.innerHTML = "";
+      snapshot.forEach((doc) => {
+        const p = document.createElement("p");
+        p.innerText = doc.data().text;
+        chatBox.appendChild(p);
+      });
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+  );
 });
